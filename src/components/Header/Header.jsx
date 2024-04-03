@@ -7,6 +7,7 @@ import {
   Menu,
   UnstyledButton,
   Text,
+  Select,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
@@ -17,7 +18,7 @@ import {
 } from "@tabler/icons-react";
 import classes from "./Header.module.css";
 import { FaBeer } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
@@ -33,6 +34,7 @@ const Header = () => {
   const { logout } = useAuth();
   const [username] = useLocalStorage("username", null);
   const [email] = useLocalStorage("email", null);
+
   const user = {
     name: username,
     email: email,
@@ -42,14 +44,14 @@ const Header = () => {
   const [opened, { toggle }] = useDisclosure(false);
   const [userMenuOpened, setUserMenuOpened] = useState(false);
   const items = links.map((link) => (
-    <a
+    <Link
       key={link.label}
       href={link.link}
       className={classes.link}
-      onClick={(event) => event.preventDefault()}
+      to={link.link}
     >
       {link.label}
-    </a>
+    </Link>
   ));
 
   return (
@@ -57,11 +59,15 @@ const Header = () => {
       <div className={classes.inner}>
         <Group onClick={() => naviagtion("/")} style={{ cursor: "pointer" }}>
           <Burger opened={opened} onClick={toggle} size="sm" hiddenFrom="sm" />
-          <FaBeer size="2rem" />
-          <h2>Logo</h2>
+          <FaBeer size="2rem" color={"#aef1ff"} />
+          <h2 style={{ color: "#21a3bf" }}>ShopSail</h2>
         </Group>
 
         <Group>
+          <Select
+            placeholder="Filter"
+            data={["React", "Angular", "Vue", "Svelte"]}
+          />
           <Autocomplete
             className={classes.search}
             placeholder="Search"

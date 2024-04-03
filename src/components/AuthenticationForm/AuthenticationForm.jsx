@@ -12,8 +12,7 @@ import {
 import classes from "./AuthenticationForm.module.css";
 import { useToggle, upperFirst } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+
 import { useNavigate } from "react-router-dom";
 import { axiosInstance } from "../../utils/axiosInstance";
 import { useAuth } from "../../hooks/useAuth";
@@ -22,13 +21,6 @@ export function AuthenticationForm() {
   const [type, toggle] = useToggle(["login", "register"]);
   const navigation = useNavigate();
   const { login } = useAuth();
-  const { data: users = [], refetch } = useQuery({
-    queryKey: ["users"],
-    queryFn: async () => {
-      const res = await axios.get("https://jsonplaceholder.typicode.com/users");
-      return res.data;
-    },
-  });
 
   const form = useForm({
     initialValues: {
@@ -67,6 +59,7 @@ export function AuthenticationForm() {
         login("email", data.email);
         login("role", data.role);
         login("isLoggedIn", true);
+        login("userId", data.userId);
         navigation("/");
       }
     } catch (error) {

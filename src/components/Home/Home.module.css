@@ -1,0 +1,9 @@
+.home-product-img {
+  width: 8rem;
+  height: 12rem;
+}
+
+.container {
+  max-width: 100%;
+  padding: 30px;
+}
