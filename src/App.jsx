@@ -2,7 +2,7 @@ import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import "./App.css";
 import { MantineProvider, createTheme } from "@mantine/core";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Home from "./components/Home/Home";
 import { AuthProvider } from "./hooks/useAuth";
 import { ProtectedRoute } from "./ProtectedRoute";
@@ -12,6 +12,8 @@ import Cart from "./components/Cart/Cart";
 import { Notifications } from "@mantine/notifications";
 
 function App() {
+  const location = useLocation();
+
   const theme = createTheme({
     colors: {
       lightBlack: ["#3B3B3B", "#313131", "#272727", "#1D1D1D"],
@@ -25,7 +27,7 @@ function App() {
     <MantineProvider theme={theme}>
       <Notifications />
       <AuthProvider>
-        <Header />
+        {location.pathname !== "/login" ? <Header /> : null}
         <Routes>
           <Route path="/login" element={<AuthenticationForm />} />
           <Route

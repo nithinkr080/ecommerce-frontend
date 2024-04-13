@@ -8,18 +8,20 @@ import {
   Container,
   Group,
   Button,
+  Select,
 } from "@mantine/core";
 import classes from "./AuthenticationForm.module.css";
 import { useToggle, upperFirst } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
-
 import { useNavigate } from "react-router-dom";
-import { axiosInstance } from "../../utils/axiosInstance";
 import { useAuth } from "../../hooks/useAuth";
-
+import { useDispatch } from "react-redux";
+import { signIn, signUp } from "../../redux/slice/authenticationSlice";
+import Toast from "../../common/Toast";
 export function AuthenticationForm() {
   const [type, toggle] = useToggle(["login", "register"]);
   const navigation = useNavigate();
+  const dispatch = useDispatch();
   const { login } = useAuth();
 
   const form = useForm({
@@ -27,7 +29,7 @@ export function AuthenticationForm() {
       email: "",
       username: "",
       password: "",
-      terms: true,
+      role: null,
     },
 
     validate: {
@@ -37,50 +39,64 @@ export function AuthenticationForm() {
       email: (val) => (/^\S+@\S+$/.test(val) ? null : "Invalid email"),
       password: (val) =>
         val.length < 5 ? "Password should include at least 6 characters" : null,
+      role: (val) =>
+        type === "register" && (!val?.length ? "Please select role" : null),
     },
   });
 
   const onFormSubmit = async () => {
-    try {
-      let config = {
-        method: "post",
-        maxBodyLength: Infinity,
-        url: "/signIn",
-        data: {
+    if (type === "register") {
+      dispatch(
+        signUp({
+          username: form.values.email,
           emailId: form.values.email,
           password: form.values.password,
-        },
-      };
-      const response = await axiosInstance.request(config);
-      if (response.status === 200) {
-        //TODO store username , values and role from api data
-        const data = response.data.data;
-        login("username", data.username);
-        login("email", data.email);
-        login("role", data.role);
-        login("isLoggedIn", true);
-        login("userId", data.userId);
-        navigation("/");
-      }
-    } catch (error) {
-      console.log(error);
+          role: form.values.role,
+        })
+      )
+        .unwrap()
+        .then((response) => {
+          if (response.status !== 200) return;
+          form.setFieldValue("password", "");
+          toggle();
+        })
+        .catch((error) => {
+          console.log(error);
+          throw error;
+        });
+    } else {
+      dispatch(
+        signIn({
+          emailId: form.values.email,
+          password: form.values.password,
+        })
+      )
+        .unwrap()
+        .then((response) => {
+          if (response.status !== 200) return;
+          const data = response.data;
+          login("username", data.username);
+          login("email", data.email);
+          login("role", data.role);
+          login("isLoggedIn", true);
+          login("userId", data.userId);
+          navigation("/");
+        })
+        .catch((error) => {
+          console.log(error);
+          throw error;
+        });
     }
   };
 
   return (
-    <Container size={700} my={40}>
+    <Container size={500} my={40}>
       {type === "login" ? (
         <>
           <Title ta="center" className={classes.title}>
             Welcome back!
           </Title>
-          <Text
-            style={{ width: "25rem" }}
-            c="dimmed"
-            size="sm"
-            ta="center"
-            mt={5}
-          >
+          <Text c="dimmed" size="sm" ta="center" mt={5}>
             Do not have an account yet?{" "}
             <Anchor size="sm" component="button" onClick={() => toggle()}>
               Create account
@@ -92,13 +108,7 @@ export function AuthenticationForm() {
           <Title ta="center" className={classes.title}>
             Create account
           </Title>
-          <Text
-            style={{ width: "25rem" }}
-            c="dimmed"
-            size="sm"
-            ta="center"
-            mt={5}
-          >
+          <Text c="dimmed" size="sm" ta="center" mt={5}>
             Already have an account?{" "}
             <Anchor size="sm" component="button" onClick={() => toggle()}>
               Sign In
@@ -106,7 +116,7 @@ export function AuthenticationForm() {
           </Text>{" "}
         </>
       )}
-      <form onSubmit={form.onSubmit(onFormSubmit)}>
+      <form onSubmit={form.onSubmit(() => onFormSubmit())}>
         <Paper withBorder shadow="md" p={30} mt={30} radius="md">
           {type === "register" && (
             <TextInput
@@ -145,6 +155,17 @@ export function AuthenticationForm() {
               "Password should include at least 6 characters"
             }
           />
+          {type === "register" ? (
+            <Select
+              label="Role"
+              placeholder="Pick Role"
+              data={["Customer", "Seller"]}
+              mt="md"
+              value={form.values.role}
+              onChange={(event) => form.setFieldValue("role", event)}
+              error={form.errors.role && "Please select role"}
+            />
+          ) : null}
           {type === "login" ? (
             <Group justify="space-between" mt="lg">
               <Anchor></Anchor>

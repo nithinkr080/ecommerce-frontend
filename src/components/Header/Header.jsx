@@ -19,10 +19,13 @@ import {
 import classes from "./Header.module.css";
 import { FaBeer } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import ProfilePicture from "../../common/ProfilePicture";
+import { useDispatch, useSelector } from "react-redux";
+import { getProducts } from "../../redux/slice/productsSlice";
+import { getCategories } from "../../redux/slice/categoriesSlice";
 
 const links = [
   { link: "/cart", label: "Cart" },
@@ -31,6 +34,7 @@ const links = [
 
 const Header = () => {
   const naviagtion = useNavigate();
+  const dispatch = useDispatch();
   const { logout } = useAuth();
   const [username] = useLocalStorage("username", null);
   const [email] = useLocalStorage("email", null);
@@ -43,6 +47,8 @@ const Header = () => {
 
   const [opened, { toggle }] = useDisclosure(false);
   const [userMenuOpened, setUserMenuOpened] = useState(false);
+  const categories = useSelector((state) => state.categories?.categories);
+
   const items = links.map((link) => (
     <Link
       key={link.label}
@@ -53,6 +59,10 @@ const Header = () => {
       {link.label}
     </Link>
   ));
+
+  useEffect(() => {
+    dispatch(getCategories());
+  }, []);
 
   return (
     <header className={classes.header}>
@@ -66,7 +76,9 @@ const Header = () => {
         <Group>
           <Select
             placeholder="Filter"
-            data={["React", "Angular", "Vue", "Svelte"]}
+            data={categories?.map((category) => category?.categoryName)}
+            onChange={(category) => dispatch(getProducts({ category }))}
+            clearable
           />
           <Autocomplete
             className={classes.search}
