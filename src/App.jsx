@@ -3,16 +3,21 @@ import "@mantine/notifications/styles.css";
 import "./App.css";
 import { MantineProvider, createTheme } from "@mantine/core";
 import { Route, Routes, useLocation } from "react-router-dom";
-import Home from "./components/Home/Home";
+import Home from "./components/Customer/Home/Home";
 import { AuthProvider } from "./hooks/useAuth";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { AuthenticationForm } from "./components/AuthenticationForm/AuthenticationForm";
-import Header from "./components/Header/Header";
-import Cart from "./components/Cart/Cart";
+import Header from "./components/Customer/Header/Header";
+import Cart from "./components/Customer/Cart/Cart";
 import { Notifications } from "@mantine/notifications";
+import { useLocalStorage } from "./hooks/useLocalStorage";
+import SellerHome from "./components/Seller/SellerHome/SellerHome";
+import SellerHeader from "./components/Seller/SellerHeader/SellerHeader";
+import AddProduct from "./components/Seller/AddProduct/AddProduct";
 
 function App() {
   const location = useLocation();
+  const [role] = useLocalStorage("role", null);
 
   const theme = createTheme({
     colors: {
@@ -27,25 +32,54 @@ function App() {
     <MantineProvider theme={theme}>
       <Notifications />
       <AuthProvider>
-        {location.pathname !== "/login" ? <Header /> : null}
+        {location.pathname !== "/login" ? (
+          role == "Customer" ? (
+            <Header />
+          ) : (
+            <SellerHeader />
+          )
+        ) : null}
         <Routes>
           <Route path="/login" element={<AuthenticationForm />} />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/cart"
-            element={
-              <ProtectedRoute>
-                <Cart />
-              </ProtectedRoute>
-            }
-          />
+          {role == "Customer" ? (
+            <>
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <Home />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/cart"
+                element={
+                  <ProtectedRoute>
+                    <Cart />
+                  </ProtectedRoute>
+                }
+              />
+            </>
+          ) : (
+            <>
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <SellerHome />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/addProduct"
+                element={
+                  <ProtectedRoute>
+                    <AddProduct />
+                  </ProtectedRoute>
+                }
+              />
+            </>
+          )}
         </Routes>
       </AuthProvider>
     </MantineProvider>

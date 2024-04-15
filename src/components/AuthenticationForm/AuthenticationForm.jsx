@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useDispatch } from "react-redux";
 import { signIn, signUp } from "../../redux/slice/authenticationSlice";
-import Toast from "../../common/Toast";
+
 export function AuthenticationForm() {
   const [type, toggle] = useToggle(["login", "register"]);
   const navigation = useNavigate();

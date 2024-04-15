@@ -1,12 +1,12 @@
 import { Center, Grid, Text } from "@mantine/core";
-import classes from "./Home.module.css";
+import classes from "./SellerHome.module.css";
 import { useEffect } from "react";
-import ProductCard from "./ProductCard";
-import Loading from "../Cart/Loading";
+import ProductCard from "./SellerProductCard";
+import Loading from "../../../common/Loading";
 import { useDispatch, useSelector } from "react-redux";
-import { getProducts } from "../../redux/slice/productsSlice";
+import { getProducts } from "../../../redux/slice/productsSlice";
 
-function Home() {
+function SellerHome() {
   const products = useSelector((state) => state.products?.products);
   const isLoading = useSelector((state) => state.products?.isLoading);
   const dispatch = useDispatch();
@@ -36,4 +36,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default SellerHome;

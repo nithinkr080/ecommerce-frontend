@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import {
+  addProductReducer,
   categoriesReducer,
   productsReducer,
   signInReducer,
@@ -9,6 +10,7 @@ import {
 const store = configureStore({
   reducer: {
     products: productsReducer,
+    addProducts: addProductReducer,
     categories: categoriesReducer,
     signIn: signInReducer,
     signUp: signUpReducer,

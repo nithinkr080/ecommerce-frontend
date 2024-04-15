@@ -9,11 +9,11 @@ import {
   Text,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
-import Toast from "../../common/Toast";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { axiosInstance } from "../../utils/axiosInstance";
+import Toast from "../../../common/Toast";
+import { useLocalStorage } from "../../../hooks/useLocalStorage";
+import { axiosInstance } from "../../../utils/axiosInstance";
 import classes from "./Cart.module.css";
-import Loading from "./Loading";
+import Loading from "../../../common/Loading";
 
 const Cart = () => {
   const [userId] = useLocalStorage("userId", null);

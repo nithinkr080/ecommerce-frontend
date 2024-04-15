@@ -16,23 +16,20 @@ import {
   IconSearch,
   IconSettings,
 } from "@tabler/icons-react";
-import classes from "./Header.module.css";
+import classes from "./SellerHeader.module.css";
 import { FaBeer } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useAuth } from "../../hooks/useAuth";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
-import ProfilePicture from "../../common/ProfilePicture";
+import { useAuth } from "../../../hooks/useAuth";
+import { useLocalStorage } from "../../../hooks/useLocalStorage";
+import ProfilePicture from "../../../common/ProfilePicture";
 import { useDispatch, useSelector } from "react-redux";
-import { getProducts } from "../../redux/slice/productsSlice";
-import { getCategories } from "../../redux/slice/categoriesSlice";
+import { getProducts } from "../../../redux/slice/productsSlice";
+import { getCategories } from "../../../redux/slice/categoriesSlice";
 
-const links = [
-  { link: "/cart", label: "Cart" },
-  { link: "/orders", label: "Orders" },
-];
+const links = [{ link: "/addProduct", label: "Add Product" }];
 
-const Header = () => {
+const SellerHeader = () => {
   const naviagtion = useNavigate();
   const dispatch = useDispatch();
   const { logout } = useAuth();
@@ -163,4 +160,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default SellerHeader;

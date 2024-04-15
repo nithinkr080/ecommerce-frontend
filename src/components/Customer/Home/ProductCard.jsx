@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { axiosInstance } from "../../utils/axiosInstance";
+import { axiosInstance } from "../../../utils/axiosInstance";
 import classes from "./ProductCard.module.css";
 import {
   Button,
@@ -10,9 +10,9 @@ import {
   SimpleGrid,
   Text,
 } from "@mantine/core";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { FaCartPlus } from "react-icons/fa";
-import Toast from "../../common/Toast";
+import Toast from "../../../common/Toast";
 
 const ProductCard = ({ product }) => {
   const [userId] = useLocalStorage("userId", null);

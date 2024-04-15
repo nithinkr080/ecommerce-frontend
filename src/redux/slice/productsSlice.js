@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { axiosInstance } from "../../utils/axiosInstance";
+import Toast from "../../common/Toast";
 
 const initialState = { products: [], isLoading: false };
 
@@ -23,6 +24,25 @@ export const getProducts = createAsyncThunk(
   }
 );
 
+export const addProduct = createAsyncThunk(
+  "addProduct/api",
+  async (state, action) => {
+    try {
+      const response = await axiosInstance.post("/addProduct", state.payload);
+      const data = response.data;
+      if (data?.status === 200) {
+        Toast.success(data?.message?.message);
+      } else {
+        Toast.success(data?.message?.message);
+      }
+      return data;
+    } catch (error) {
+      Toast.error(error?.message);
+      throw error;
+    }
+  }
+);
+
 const productsSlice = createSlice({
   name: "products",
   initialState,
@@ -40,7 +60,26 @@ const productsSlice = createSlice({
   },
 });
 
+const addProductSlice = createSlice({
+  name: "addProducts",
+  initialState,
+  extraReducers: (builder) => {
+    builder.addCase(getProducts.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(getProducts.fulfilled, (state, action) => {
+      state.isLoading = false;
+    });
+    builder.addCase(getProducts.rejected, (state) => {
+      state.isLoading = false;
+    });
+  },
+});
+
 const productsReducer = productsSlice.reducer;
 
+const addProductReducer = addProductSlice.reducer;
+
 export const productsActions = productsSlice.actions;
-export default productsReducer;
+export const addProductActions = addProductSlice.actions;
+export { productsReducer, addProductReducer };
