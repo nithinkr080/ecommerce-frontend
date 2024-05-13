@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   Container,
   TextInput,
@@ -8,6 +8,8 @@ import {
   Image,
   Grid,
   useMantineTheme,
+  FileButton,
+  Text,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,8 +23,9 @@ const AddProduct = () => {
   const navigation = useNavigate();
   const [userId] = useLocalStorage("userId", null);
   const categories = useSelector((state) => state.categories?.categories);
-
+  const resetRef = useRef(null);
   const theme = useMantineTheme();
+
   const form = useForm({
     initialValues: {
       name: "",
@@ -47,6 +50,11 @@ const AddProduct = () => {
       image: "Please select an image",
     },
   });
+
+  const clearFile = () => {
+    form.setFieldValue("image", null);
+    resetRef.current?.();
+  };
 
   const convertToBase64 = (image) => {
     return new Promise((resolve) => {
@@ -88,7 +96,7 @@ const AddProduct = () => {
   useEffect(() => {
     dispatch(getCategories());
   }, []);
-
+  console.log("form.values.image", form.values.image);
   return (
     <Container size="sm">
       <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -148,14 +156,34 @@ const AddProduct = () => {
             />
           </Grid.Col>
           <Grid.Col span={12}>
-            <input
+            {/* <input
               type="file"
               accept="image/*"
               onChange={(event) =>
                 form.setFieldValue("image", event.target.files[0])
               }
               required
-            />
+            /> */}
+            <FileButton
+              resetRef={resetRef}
+              onChange={(event) => form.setFieldValue("image", event)}
+              accept="image/*"
+            >
+              {(props) => <Button {...props}>Upload image</Button>}
+            </FileButton>
+            <Button
+              disabled={!form.values.image}
+              color="red"
+              onClick={clearFile}
+              ms="md"
+            >
+              Reset
+            </Button>
+            {form.values.image && (
+              <Text size="sm" ta="center" mt="sm">
+                Picked file: {form.values.image.name}
+              </Text>
+            )}
             {form.errors.image && (
               <div style={{ color: theme.colors.red[6] }}>
                 {form.errors.image}

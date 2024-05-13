@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import {
   addProductReducer,
   categoriesReducer,
+  deleteProductReducer,
   productsReducer,
   signInReducer,
   signUpReducer,
@@ -14,6 +15,7 @@ const store = configureStore({
     categories: categoriesReducer,
     signIn: signInReducer,
     signUp: signUpReducer,
+    deleteProduct: deleteProductReducer,
   },
 });
 

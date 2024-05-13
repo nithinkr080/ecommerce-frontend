@@ -14,6 +14,7 @@ import { useLocalStorage } from "./hooks/useLocalStorage";
 import SellerHome from "./components/Seller/SellerHome/SellerHome";
 import SellerHeader from "./components/Seller/SellerHeader/SellerHeader";
 import AddProduct from "./components/Seller/AddProduct/AddProduct";
+import Checkout from "./components/Customer/Checkout/Checkout";
 
 function App() {
   const location = useLocation();
@@ -56,6 +57,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Cart />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/checkout"
+                element={
+                  <ProtectedRoute>
+                    <Checkout />
                   </ProtectedRoute>
                 }
               />

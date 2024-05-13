@@ -11,23 +11,23 @@ import {
   Text,
 } from "@mantine/core";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
-import { FaCartPlus } from "react-icons/fa";
+import { MdDeleteForever } from "react-icons/md";
 import Toast from "../../../common/Toast";
-
-const ProductCard = ({ product }) => {
+import { useDispatch } from "react-redux";
+import { deleteProduct, getProducts } from "../../../redux/slice/productsSlice";
+const SellerProductCard = ({ product }) => {
   const [userId] = useLocalStorage("userId", null);
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
 
-  const addToCart = async (productId) => {
+  const removeProduct = async (productId) => {
     try {
       setIsLoading(true);
-      const payload = { productId, userId };
-      const response = await axiosInstance.post("/cart/add", payload);
-      if (response?.data?.status == 200) {
-        Toast.success(response?.data?.message?.message);
-      } else {
-        throw new Error("Something went wrong");
-      }
+      dispatch(deleteProduct({ productId: productId }))
+        .unwrap()
+        .then(() => {
+          dispatch(getProducts({ sellerId: JSON.stringify(userId) }));
+        });
       setIsLoading(false);
     } catch (error) {
       console.log(error);
@@ -53,10 +53,10 @@ const ProductCard = ({ product }) => {
           </Text>
           <Button
             loading={isLoading}
-            onClick={() => addToCart(product.productId)}
-            bg={"default.0"}
+            onClick={() => removeProduct(product.productId)}
+            bg={"red"}
           >
-            <FaCartPlus size="1.1rem" />
+            <MdDeleteForever size="1.3rem" />
           </Button>
         </Group>
         <Group>
@@ -69,4 +69,4 @@ const ProductCard = ({ product }) => {
   );
 };
 
-export default ProductCard;
+export default SellerProductCard;

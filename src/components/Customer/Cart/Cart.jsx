@@ -14,12 +14,20 @@ import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { axiosInstance } from "../../../utils/axiosInstance";
 import classes from "./Cart.module.css";
 import Loading from "../../../common/Loading";
+import { useDispatch } from "react-redux";
+import { removeCartProduct } from "../../../redux/slice/productsSlice";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const [userId] = useLocalStorage("userId", null);
+  const navigation = useNavigate();
+  const dispatch = useDispatch();
   const [cartItems, setCartItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const totalPrice = cartItems.reduce((acc, item) => acc + item.price, 0);
+  const totalPrice = cartItems.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
 
   const getCartList = async () => {
     try {
@@ -27,7 +35,35 @@ const Cart = () => {
       const response = await axiosInstance.get(`/cart/${userId}`);
       if (response?.data?.status === 200) {
         const data = response?.data?.data;
-        setCartItems(data);
+
+        data.sort((a, b) => a?.productId - b?.productId);
+        const productMap = new Map();
+
+        data.forEach((product) => {
+          if (productMap.has(product.productId)) {
+            productMap.set(
+              product.productId,
+              productMap.get(product.productId) + 1
+            );
+          } else {
+            productMap.set(product.productId, 1);
+          }
+        });
+
+        const uniqueProductsMap = new Map();
+
+        data.forEach((product) => {
+          if (!uniqueProductsMap.has(product.productId)) {
+            const uniqueProduct = { ...product };
+            const quantity = productMap.get(product.productId);
+            if (quantity > 1) uniqueProduct.quantity = quantity;
+            else uniqueProduct.quantity = 1;
+            uniqueProductsMap.set(product.productId, uniqueProduct);
+          }
+        });
+
+        const uniqueProducts = Array.from(uniqueProductsMap.values());
+        setCartItems([...uniqueProducts]);
       } else {
         throw new Error("Something went wrong");
       }
@@ -38,9 +74,34 @@ const Cart = () => {
     }
   };
 
+  function removeFirstOccurrence(arr, target) {
+    const index = arr.indexOf(target);
+    if (index !== -1) {
+      arr.splice(index, 1);
+    }
+    return arr;
+  }
+
   const removeFromCart = (id) => {
-    const updatedCart = cartItems.filter((item) => item.id !== id);
-    setCartItems(updatedCart);
+    const cartList = [];
+    cartItems.forEach((item) => {
+      if (item?.quantity > 1) {
+        for (let i = 0; i < item.quantity; i++) {
+          cartList.push(item.productId);
+        }
+      }
+    });
+    const updatedCart = removeFirstOccurrence(cartList.slice(), id);
+    const payload = {
+      type: "remove",
+      cartList: JSON.stringify(updatedCart),
+      userId: userId,
+    };
+    dispatch(removeCartProduct({ payload }))
+      .unwrap()
+      .then((res) => {
+        getCartList();
+      });
   };
 
   useEffect(() => {
@@ -58,6 +119,7 @@ const Cart = () => {
             <Group className={classes.cartHeader} spacing="md">
               <Text weight={700}>Item</Text>
               <Text weight={700}>Price</Text>
+              <Text weight={700}>Quantity</Text>
               <Text weight={700}>Remove</Text>
             </Group>
             {isLoading ? (
@@ -85,12 +147,13 @@ const Cart = () => {
                       {item.productName}
                     </Text>
                   </Stack>
-                  <Text>₹{item.price}</Text>
+                  <Text style={{ marginRight: "6.1rem" }}>₹{item.price}</Text>
+                  <Text>{item.quantity}</Text>
                   <Button
                     variant="outline"
                     color="red"
                     size="xs"
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => removeFromCart(item.productId)}
                     className={classes.removeButton}
                   >
                     Remove
@@ -117,6 +180,7 @@ const Cart = () => {
                   color="default.0"
                   size="md"
                   className={classes.checkoutButton}
+                  onClick={() => navigation("/checkout")}
                 >
                   Checkout
                 </Button>

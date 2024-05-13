@@ -4,31 +4,47 @@ import Toast from "../../common/Toast";
 
 const initialState = { products: [], isLoading: false };
 
-export const getProducts = createAsyncThunk(
-  "products/api",
-  async (state, action) => {
-    try {
-      //To send empty string to backend is the paramter is undefined
-      const category =
-        typeof state?.category === "undefined" || !state?.category
-          ? ""
-          : state?.category;
-      const response = await axiosInstance.get("/products", {
-        params: { categoryName: category },
-      });
-      return response.data;
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
+export const getProducts = createAsyncThunk("products/api", async (state) => {
+  try {
+    //To send empty string to backend is the paramter is undefined
+    const category =
+      typeof state?.category === "undefined" || !state?.category
+        ? ""
+        : state?.category;
+    const response = await axiosInstance.get("/products", {
+      params: { categoryName: category, sellerId: state?.sellerId },
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
-);
+});
 
-export const addProduct = createAsyncThunk(
-  "addProduct/api",
-  async (state, action) => {
+export const addProduct = createAsyncThunk("addProduct/api", async (state) => {
+  try {
+    const response = await axiosInstance.post("/addProduct", state.payload);
+    const data = response.data;
+    if (data?.status === 200) {
+      Toast.success(data?.message?.message);
+    } else {
+      Toast.success(data?.message?.message);
+    }
+    return data;
+  } catch (error) {
+    Toast.error(error?.message);
+    throw error;
+  }
+});
+
+export const deleteProduct = createAsyncThunk(
+  "deleteProduct/api",
+  async (state) => {
     try {
-      const response = await axiosInstance.post("/addProduct", state.payload);
+      const response = await axiosInstance.get("/deleteProduct", {
+        params: { productId: state?.productId },
+      });
+      console.log("response", response);
       const data = response.data;
       if (data?.status === 200) {
         Toast.success(data?.message?.message);
@@ -37,6 +53,27 @@ export const addProduct = createAsyncThunk(
       }
       return data;
     } catch (error) {
+      Toast.error(error?.message);
+      throw error;
+    }
+  }
+);
+
+export const removeCartProduct = createAsyncThunk(
+  "/cart/remove/api",
+  async (state) => {
+    console.log("state", state.payload);
+    try {
+      const response = await axiosInstance.post("/cart/remove", state.payload);
+      const data = response.data;
+      if (data?.status === 200) {
+        Toast.success(data?.message?.message);
+      } else {
+        Toast.success(data?.message?.message);
+      }
+      return data;
+    } catch (error) {
+      console.log("error", error);
       Toast.error(error?.message);
       throw error;
     }
@@ -76,10 +113,30 @@ const addProductSlice = createSlice({
   },
 });
 
+const deleteProductSlice = createSlice({
+  name: "deleteProducts",
+  initialState,
+  extraReducers: (builder) => {
+    builder.addCase(getProducts.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(getProducts.fulfilled, (state) => {
+      state.isLoading = false;
+    });
+    builder.addCase(getProducts.rejected, (state) => {
+      state.isLoading = false;
+    });
+  },
+});
+
+//* Reducer
 const productsReducer = productsSlice.reducer;
-
 const addProductReducer = addProductSlice.reducer;
+const deleteProductReducer = deleteProductSlice.reducer;
 
+//* Actions
 export const productsActions = productsSlice.actions;
 export const addProductActions = addProductSlice.actions;
-export { productsReducer, addProductReducer };
+export const ProductActions = addProductSlice.actions;
+
+export { productsReducer, addProductReducer, deleteProductReducer };

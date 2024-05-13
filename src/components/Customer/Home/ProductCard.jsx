@@ -21,7 +21,7 @@ const ProductCard = ({ product }) => {
   const addToCart = async (productId) => {
     try {
       setIsLoading(true);
-      const payload = { productId, userId };
+      const payload = { productId, userId, type: "add" };
       const response = await axiosInstance.post("/cart/add", payload);
       if (response?.data?.status == 200) {
         Toast.success(response?.data?.message?.message);

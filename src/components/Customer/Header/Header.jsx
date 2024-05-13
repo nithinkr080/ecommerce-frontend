@@ -77,7 +77,9 @@ const Header = () => {
           <Select
             placeholder="Filter"
             data={categories?.map((category) => category?.categoryName)}
-            onChange={(category) => dispatch(getProducts({ category }))}
+            onChange={(category) =>
+              dispatch(getProducts({ category, sellerId: "" }))
+            }
             clearable
           />
           <Autocomplete

@@ -81,6 +81,7 @@ export function AuthenticationForm() {
           login("isLoggedIn", true);
           login("userId", data.userId);
           navigation("/");
+          window.location.reload();
         })
         .catch((error) => {
           console.log(error);
