@@ -15,6 +15,7 @@ import SellerHome from "./components/Seller/SellerHome/SellerHome";
 import SellerHeader from "./components/Seller/SellerHeader/SellerHeader";
 import AddProduct from "./components/Seller/AddProduct/AddProduct";
 import Checkout from "./components/Customer/Checkout/Checkout";
+import Orders from "./components/Customer/Orders/Orders";
 
 function App() {
   const location = useLocation();
@@ -65,6 +66,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Checkout />
+                  </ProtectedRoute>
+                }
+              />{" "}
+              <Route
+                path="/orders"
+                element={
+                  <ProtectedRoute>
+                    <Orders />
                   </ProtectedRoute>
                 }
               />

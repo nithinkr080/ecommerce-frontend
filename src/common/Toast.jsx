@@ -7,6 +7,7 @@ class Toast {
     });
   }
   error(message) {
+    message = message ?? "Someting went wrong";
     notifications.show({
       title: `Error: ${message}`,
       color: "red",

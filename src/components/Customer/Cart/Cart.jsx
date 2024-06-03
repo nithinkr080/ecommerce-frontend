@@ -180,7 +180,7 @@ const Cart = () => {
                   color="default.0"
                   size="md"
                   className={classes.checkoutButton}
-                  onClick={() => navigation("/checkout")}
+                  onClick={() => navigation("/checkout", { state: cartItems })}
                 >
                   Checkout
                 </Button>

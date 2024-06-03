@@ -1,31 +1,29 @@
-import cx from "clsx";
 import {
   Autocomplete,
-  Group,
   Burger,
-  rem,
+  Group,
   Menu,
-  UnstyledButton,
-  Text,
   Select,
+  Text,
+  UnstyledButton,
+  rem,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import {
-  IconChevronDown,
-  IconLogout,
-  IconSearch,
-  IconSettings,
-} from "@tabler/icons-react";
-import classes from "./Header.module.css";
-import { FaBeer } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { IconChevronDown, IconLogout, IconSearch } from "@tabler/icons-react";
+import cx from "clsx";
 import { useEffect, useState } from "react";
+import { FaShop } from "react-icons/fa6";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import ProfilePicture from "../../../common/ProfilePicture";
 import { useAuth } from "../../../hooks/useAuth";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
-import ProfilePicture from "../../../common/ProfilePicture";
-import { useDispatch, useSelector } from "react-redux";
-import { getProducts } from "../../../redux/slice/productsSlice";
 import { getCategories } from "../../../redux/slice/categoriesSlice";
+import {
+  getProducts,
+  productsActions,
+} from "../../../redux/slice/productsSlice";
+import classes from "./Header.module.css";
 
 const links = [
   { link: "/cart", label: "Cart" },
@@ -38,6 +36,7 @@ const Header = () => {
   const { logout } = useAuth();
   const [username] = useLocalStorage("username", null);
   const [email] = useLocalStorage("email", null);
+  const products = useSelector((state) => state.products?.products);
 
   const user = {
     name: username,
@@ -69,7 +68,7 @@ const Header = () => {
       <div className={classes.inner}>
         <Group onClick={() => naviagtion("/")} style={{ cursor: "pointer" }}>
           <Burger opened={opened} onClick={toggle} size="sm" hiddenFrom="sm" />
-          <FaBeer size="2rem" color={"#aef1ff"} />
+          <FaShop size="2rem" color={"#21a3bf"} />
           <h2 style={{ color: "#21a3bf" }}>ShopSail</h2>
         </Group>
 
@@ -91,15 +90,24 @@ const Header = () => {
                 stroke={1.5}
               />
             }
-            data={[
-              "React",
-              "Angular",
-              "Vue",
-              "Next.js",
-              "Riot.js",
-              "Svelte",
-              "Blitz.js",
-            ]}
+            onChange={(e) => {
+              document.onkeypress = function (event) {
+                event = event || window.event;
+                if (event.key?.toLowerCase() == "enter") {
+                  if (e?.length > 0) {
+                    const filtredSearch = products?.filter((product) => {
+                      const enterdProductName =
+                        product?.productName?.toLowerCase();
+                      const searchedProductName = e.toLowerCase();
+                      return enterdProductName.includes(searchedProductName);
+                    });
+                    dispatch(productsActions.searchProduct(filtredSearch));
+                  } else {
+                    dispatch(getProducts({ sellerId: "" }));
+                  }
+                }
+              };
+            }}
             visibleFrom="xs"
           />
           <Group ml={50} gap={5} className={classes.links} visibleFrom="sm">
@@ -134,17 +142,7 @@ const Header = () => {
               </UnstyledButton>
             </Menu.Target>
             <Menu.Dropdown>
-              <Menu.Label>Settings</Menu.Label>
-              <Menu.Item
-                leftSection={
-                  <IconSettings
-                    style={{ width: rem(16), height: rem(16) }}
-                    stroke={1.5}
-                  />
-                }
-              >
-                Account settings
-              </Menu.Item>
+              <Menu.Label>Account</Menu.Label>
               <Menu.Item
                 color="red"
                 leftSection={

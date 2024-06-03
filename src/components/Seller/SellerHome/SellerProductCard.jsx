@@ -42,18 +42,18 @@ const SellerProductCard = ({ product }) => {
         <Center>
           <img
             className={classes["home-product-img"]}
-            src={`data:image/png;base64,${product.image}`}
-            alt={product.productName}
+            src={`data:image/png;base64,${product?.image}`}
+            alt={product?.productName}
           />
         </Center>
         <Divider my="md" mb="0" />
         <Group justify="space-between" grow>
           <Text size="md" c={"lightBlack.0"}>
-            {product.productName}
+            {product?.productName}
           </Text>
           <Button
             loading={isLoading}
-            onClick={() => removeProduct(product.productId)}
+            onClick={() => removeProduct(product?.productId)}
             bg={"red"}
           >
             <MdDeleteForever size="1.3rem" />
@@ -61,7 +61,7 @@ const SellerProductCard = ({ product }) => {
         </Group>
         <Group>
           <Text c={"lightBlack.3"} size="sm">
-            ₹{product.price}
+            ₹{product?.price}
           </Text>
         </Group>
       </SimpleGrid>

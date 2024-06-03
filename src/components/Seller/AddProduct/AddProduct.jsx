@@ -169,7 +169,11 @@ const AddProduct = () => {
               onChange={(event) => form.setFieldValue("image", event)}
               accept="image/*"
             >
-              {(props) => <Button {...props}>Upload image</Button>}
+              {(props) => (
+                <Button {...props} bg="cyan">
+                  Upload image
+                </Button>
+              )}
             </FileButton>
             <Button
               disabled={!form.values.image}
@@ -203,6 +207,7 @@ const AddProduct = () => {
               variant="filled"
               style={{ marginTop: 16 }}
               fullWidth
+              bg="cyan"
             >
               Add Product
             </Button>

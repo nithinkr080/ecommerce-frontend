@@ -7,6 +7,7 @@ import {
   signInReducer,
   signUpReducer,
 } from "./slice";
+import { ordersReducer } from "./slice/productsSlice";
 
 const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ const store = configureStore({
     signIn: signInReducer,
     signUp: signUpReducer,
     deleteProduct: deleteProductReducer,
+    orders: ordersReducer,
   },
 });
 

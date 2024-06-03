@@ -1,31 +1,26 @@
-import cx from "clsx";
 import {
   Autocomplete,
-  Group,
   Burger,
-  rem,
+  Group,
   Menu,
-  UnstyledButton,
-  Text,
   Select,
+  Text,
+  UnstyledButton,
+  rem,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import {
-  IconChevronDown,
-  IconLogout,
-  IconSearch,
-  IconSettings,
-} from "@tabler/icons-react";
-import classes from "./SellerHeader.module.css";
-import { FaBeer } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { IconChevronDown, IconLogout, IconSearch } from "@tabler/icons-react";
+import cx from "clsx";
 import { useEffect, useState } from "react";
+import { FaShop } from "react-icons/fa6";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import ProfilePicture from "../../../common/ProfilePicture";
 import { useAuth } from "../../../hooks/useAuth";
 import { useLocalStorage } from "../../../hooks/useLocalStorage";
-import ProfilePicture from "../../../common/ProfilePicture";
-import { useDispatch, useSelector } from "react-redux";
-import { getProducts } from "../../../redux/slice/productsSlice";
 import { getCategories } from "../../../redux/slice/categoriesSlice";
+import { getProducts } from "../../../redux/slice/productsSlice";
+import classes from "./SellerHeader.module.css";
 
 const links = [{ link: "/addProduct", label: "Add Product" }];
 
@@ -66,7 +61,7 @@ const SellerHeader = () => {
       <div className={classes.inner}>
         <Group onClick={() => naviagtion("/")} style={{ cursor: "pointer" }}>
           <Burger opened={opened} onClick={toggle} size="sm" hiddenFrom="sm" />
-          <FaBeer size="2rem" color={"#aef1ff"} />
+          <FaShop size="2rem" color={"#21a3bf"} />
           <h2 style={{ color: "#21a3bf" }}>ShopSail</h2>
         </Group>
 
@@ -129,17 +124,7 @@ const SellerHeader = () => {
               </UnstyledButton>
             </Menu.Target>
             <Menu.Dropdown>
-              <Menu.Label>Settings</Menu.Label>
-              <Menu.Item
-                leftSection={
-                  <IconSettings
-                    style={{ width: rem(16), height: rem(16) }}
-                    stroke={1.5}
-                  />
-                }
-              >
-                Account settings
-              </Menu.Item>
+              <Menu.Label>Account</Menu.Label>
               <Menu.Item
                 color="red"
                 leftSection={
